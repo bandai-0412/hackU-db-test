@@ -1,0 +1,35 @@
+services:
+  php_service:
+    container_name: phpd_database_container
+    build:
+      context: './docker/'
+    volumes:
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - './src:/var/www/html'
+    ports:
+      - '80:80'
+    networks:
+        - mynetwork
+    depends_on:
+        - mysql
+  mysql:
+      image: 'mysql/mysql-server:8.0'
+      ports:
+          - '3310:3306'
+      environment:
+          MYSQL_ROOT_PASSWORD: 'mypassword'
+          MYSQL_ROOT_HOST: '%'
+          MYSQL_DATABASE: 'mydatabase'
+          MYSQL_USER: 'myuser'
+          MYSQL_PASSWORD: 'mypassword'
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      volumes:
+          - 'sail-mysql:/var/lib/mysql'
+      networks:
+          - mynetwork
+networks:
+    mynetwork:
+        driver: bridge
+volumes:
+    sail-mysql:
+        driver: local
